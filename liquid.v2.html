@@ -1,0 +1,7 @@
+{%- if recommended_variants_list != blank and recommended_variants_list.first != blank -%}
+  {%- for rec_variant in recommended_variants_list -%}
+    <!-- Display product card -->
+  {%- endfor -%}
+{%- else -%}
+  <p>No recommendations available for this variant.</p>
+{%- endif -%}

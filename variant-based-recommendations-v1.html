@@ -1,0 +1,20 @@
+{% comment %}
+  A basic, hardcoded approach to show recommendations for a specific variant.
+  This is not scalable but can be useful for a quick proof of concept.
+{% endcomment %}
+
+{% if product.selected_or_first_available_variant.sku == 'SKU-A1' %}
+  <div class="recommendations">
+    <h4>Recommended Combinations</h4>
+    <div class="recommended-variant">
+      <img src="{{ 'variant-b2-image.jpg' | asset_url }}" alt="Variant B2">
+      <p>Variant B2 Name</p>
+      <p>$99.00</p>
+    </div>
+    <div class="recommended-variant">
+      <img src="{{ 'variant-c3-image.jpg' | asset_url }}" alt="Variant C3">
+      <p>Variant C3 Name</p>
+      <p>$129.00</p>
+    </div>
+  </div>
+{% endif %}

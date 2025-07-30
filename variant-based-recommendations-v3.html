@@ -1,0 +1,45 @@
+{% comment %}
+  The container for our dynamic recommendations.
+{% endcomment %}
+<h4>Recommended Combinations</h4>
+<div id="variant-recommendations" data-product-id="{{ product.id }}"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const recommendationsContainer = document.getElementById('variant-recommendations');
+    const productId = recommendationsContainer.dataset.productId;
+
+    const renderRecommendations = async (variantId) => {
+      // Get the recommended SKUs from the variant's metafield
+      const response = await fetch(`/products/${productId}.js`);
+      const product = await response.json();
+      const selectedVariant = product.variants.find(v => v.id === variantId);
+      const recommendedSkus = selectedVariant.metafields.recommendations; // Assuming metafield is named 'recommendations'
+
+      if (recommendedSkus) {
+        // Use the Storefront API to fetch details for the recommended SKUs
+        // (This would require setting up Storefront API access)
+        // ... Storefront API call to get product details for each SKU ...
+
+        // For demonstration, we'll just display the SKUs
+        recommendationsContainer.innerHTML = recommendedSkus.map(sku => `<p>${sku}</p>`).join('');
+      }
+    };
+
+    // Listen for the 'variant:change' event from Shopify's section rendering
+    document.addEventListener('variant:change', (event) => {
+      const variant = event.detail.variant;
+      if (variant) {
+        renderRecommendations(variant.id);
+      }
+    });
+
+    // Initial render
+    const initialVariantId = new URL(window.location).searchParams.get('variant');
+    if (initialVariantId) {
+      renderRecommendations(parseInt(initialVariantId));
+    } else {
+      renderRecommendations(product.variants[0].id)
+    }
+  });
+</script>

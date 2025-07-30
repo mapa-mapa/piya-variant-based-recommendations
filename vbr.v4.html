@@ -1,0 +1,53 @@
+{%- comment %} --- Start of Variant-Based Recommendations Section --- {% endcomment -%}
+{%- liquid
+  assign current_product_to_check = product
+  assign variant_to_check_metafields_on = product.selected_or_first_available_variant
+
+  if variant and current_product_to_check.variants contains variant
+    assign variant_to_check_metafields_on = variant
+  endif
+
+  assign raw_metafield_content = variant_to_check_metafields_on.metafields.custom.recommended_variants.value
+  assign final_display_list = '' | split: ''
+
+  if raw_metafield_content != blank
+    assign first_item_in_raw = raw_metafield_content | first
+
+    if first_item_in_raw contains "gid://"
+      comment --- It looks like a list of GID strings. Iterate and resolve. --- endcomment
+      for gid_string in raw_metafield_content
+        assign variant_id_from_gid = gid_string | split: '/' | last
+        assign resolved_variant = shop.variants[variant_id_from_gid]
+        if resolved_variant != blank and resolved_variant.product != blank
+          assign final_display_list = final_display_list | concat: [resolved_variant]
+        endif
+      endfor
+    elsif first_item_in_raw.id != blank
+      comment --- It looks like it might already be a list of objects. Re-process it. --- endcomment
+      for obj_item in raw_metafield_content
+        if obj_item.id != blank and obj_item.product != blank
+          assign final_display_list = final_display_list | concat: [obj_item]
+        endif
+      endfor
+    endif
+  endif
+-%}
+
+<div class="variant-recommendations" data-variant-id="{{ variant_to_check_metafields_on.id }}" data-section-id="{{ section.id }}">
+  <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(var(--color-foreground), 0.1);">
+    <h3 style="margin-bottom: 1rem; font-size: 1.5rem;">Recommended Combinations</h3>
+    {%- if final_display_list.size > 0 -%}
+      <div class="product-recommendations__list grid product-grid grid--{{ final_display_list.size | at_most: 4 }}-col-desktop grid--2-col-tablet-down">
+        {%- for rec_variant in final_display_list -%}
+          {%- assign rec_product = rec_variant.product -%}
+          {%- if rec_variant.id != blank and rec_product.id != blank -%}
+            <!-- Full product card HTML goes here -->
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <p style="text-align: center; padding: 20px;">No recommendations available for this variant.</p>
+    {%- endif -%}
+  </div>
+</div>
+{%- comment %} --- End of Variant-Based Recommendations Section --- {% endcomment -%}

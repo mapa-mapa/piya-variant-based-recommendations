@@ -1,0 +1,8 @@
+{%- liquid
+  assign final_display_list = '' | split: ''
+  if raw_recommended_list_from_metafield != blank
+    for item_in_raw_list in raw_recommended_list_from_metafield
+      assign final_display_list = final_display_list | concat: [item_in_raw_list]
+    endfor
+  endif
+-%}

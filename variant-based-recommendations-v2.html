@@ -1,0 +1,19 @@
+{% comment %}
+  Using product tags to group recommended variants.
+  A product with the tag 'reco-group-1' will be recommended for other products in the same group.
+{% endcomment %}
+
+<h4>Recommended Combinations</h4>
+<div class="recommendations">
+  {% for product_in_collection in collections.all.products %}
+    {% if product_in_collection.tags contains 'reco-group-1' and product_in_collection.id != product.id %}
+      <div class="recommended-variant">
+        <a href="{{ product_in_collection.url }}">
+          <img src="{{ product_in_collection.featured_image | img_url: 'medium' }}" alt="{{ product_in_collection.title }}">
+          <p>{{ product_in_collection.title }}</p>
+          <p>{{ product_in_collection.price | money }}</p>
+        </a>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
